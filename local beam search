@@ -1,0 +1,76 @@
+def local_beam_search(states, starts, k):
+    current = starts
+    iteration = 1
+
+    print("\n===== Local Beam Search =====")
+    print("Starting States:", current)
+
+    while True:
+        print(f"\n--- Iteration {iteration} ---")
+
+        for s in current:
+            print("Current State:", s, "Value:", states[s]["value"])
+
+        candidates = []
+
+        for s in current:
+            for n in states[s]["neighbors"]:
+                candidates.append(n)
+
+        # Remove duplicates
+        candidates = list(set(candidates))
+
+        print("Candidates:", candidates)
+
+        if not candidates:
+            print("No candidates available.")
+            return max(current, key=lambda x: states[x]["value"])
+
+        # Select K best states
+        best_states = sorted(
+            candidates,
+            key=lambda x: states[x]["value"],
+            reverse=True
+        )[:k]
+
+        print("Best States:", best_states)
+
+        for s in best_states:
+            print("State:", s, "Value:", states[s]["value"])
+
+        # Check if global maximum is reached
+        best = max(best_states, key=lambda x: states[x]["value"])
+
+        if states[best]["value"] == 10:
+            print("\nGlobal Maximum Reached!")
+            return best
+
+        current = best_states
+        iteration += 1
+
+
+states = {
+
+    "A": {"value": 1, "neighbors": ["B"]},
+
+    "B": {"value": 5, "neighbors": ["A", "C"]},
+
+    "C": {"value": 3, "neighbors": ["B", "D"]},
+
+    "D": {"value": 2, "neighbors": ["C", "E"]},
+
+    "E": {"value": 10, "neighbors": ["D", "F"]},
+
+    "F": {"value": 6, "neighbors": ["E", "G"]},
+
+    "G": {"value": 10, "neighbors": ["F", "H"]},
+
+    "H": {"value": 5, "neighbors": ["G"]},
+
+}
+
+result = local_beam_search(states, ["A", "D"], 2)
+
+print("\n===== FINAL RESULT =====")
+print("Local Beam Search Result:", result)
+print("Value:", states[result]["value"])
